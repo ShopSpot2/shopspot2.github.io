@@ -2,1194 +2,582 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Shop Spot</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ShopSpot Premium</title>
     <style>
-        /* --- Global Styles & Theme --- */
         :root {
-            --primary-bg: #FFFFFF;
-            --pastel-pink: #F8C8DC;
-            --pastel-mint: #B2EBF2;
-            --pastel-blue: #A7D8DE;
-            --pastel-lavender: #E6E6FA;
-            --text-color: #333333;
-            --text-light: #666666;
-            --border-color: #E0E0E0;
-            --shadow: 0 2px 6px rgba(0,0,0,0.08);
-            --premium-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-            --icon-color: var(--text-color);
-            --fab-initial-bottom: 20px; /* FAB's bottom spacing from viewport edge */
+            --primary: #2563eb;       
+            --bg: #f8fafc;            
+            --surface: #ffffff;
+            --text-main: #1e293b;     
+            --text-sub: #64748b;      
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --gray-hover: #f1f5f9;
+            --gray-active: #e2e8f0;
+            
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius: 16px;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg); color: var(--text-main); 
+            min-height: 100vh;
         }
 
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-            background-color: var(--primary-bg);
-        }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        body {
-            font-family: var(--premium-font);
-            margin: 0;
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            font-size: 16px;
-            line-height: 1.5;
+        /* Header */
+        header { 
+            background: var(--surface); padding: 15px 20px; 
+            position: sticky; top: 0; z-index: 50; 
+            display: flex; align-items: center; justify-content: center;
+            border-bottom: 1px solid var(--border);
         }
+        h1 { font-size: 1.1rem; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+        .btn-icon { position: absolute; left: 15px; background: transparent; border: none; padding: 8px; border-radius: 50%; color: var(--text-main); cursor: pointer; }
 
-        .app-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 100vw;
-        }
+        /* Tabs */
+        .tab-wrapper { padding: 15px 20px 5px; background: var(--bg); }
+        .tabs { background: #e2e8f0; padding: 4px; border-radius: 12px; display: flex; }
+        .tab { flex: 1; border: none; background: transparent; padding: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-sub); border-radius: 9px; cursor: pointer; transition: 0.2s; }
+        .tab.active { background: var(--surface); color: var(--text-main); box-shadow: var(--shadow-sm); }
 
-        /* --- Header --- */
-        .app-header {
-            background-color: var(--pastel-blue);
-            color: white;
-            padding: 12px 15px;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .app-header .app-title-text {
-             margin-right: 8px;
-        }
-        .app-header svg {
-            width: 1.2em; height: 1.2em;
-            fill: white;
-            vertical-align: -0.15em;
-        }
-
-        /* Ad Placeholders REMOVED */
-
-
-        /* --- Navigation --- */
-        .app-nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--pastel-lavender);
-            padding: 0;
-            box-shadow: var(--shadow);
-            flex-shrink: 0;
-        }
-
-        .nav-button {
-            background-color: transparent;
-            color: var(--text-color);
-            border: none;
-            padding: 10px 12px;
-            font-size: 0.9em;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 0;
-            transition: background-color 0.2s, color 0.2s;
-            flex: 1;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .nav-button svg {
-            width: 1.2em; height: 1.2em;
-            fill: currentColor;
-        }
-
-        .nav-button:hover, .nav-button.active {
-            background-color: rgba(0,0,0,0.05);
-            color: var(--pastel-blue);
-            font-weight: 600;
-        }
-
-        /* --- Screens --- */
-        .screen {
-            display: none;
-            padding: 15px;
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-bottom: calc(var(--fab-initial-bottom) + 56px + 15px);
-        }
-
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-        }
-        .screen h2.screen-title {
-            font-size: 1.3em;
-            color: var(--pastel-blue);
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        /* List Styles, Item Styles, Buttons, FAB, Modals, Forms, List Detail Specifics, Utility - REMAINS THE SAME */
-        /* --- List Styles --- */
-        .list-card, .history-list-card {
-            background-color: white;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow);
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .list-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .list-card-clickable-area {
-            cursor: pointer;
-            display: block;
-        }
-        .list-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .list-card-name {
-            font-size: 1.1em;
-            font-weight: 600;
-            word-break: break-word;
-            color: var(--text-color);
-        }
-        .list-card-meta {
-            font-size: 0.85em;
-            color: var(--text-light);
-        }
-        .list-actions button, .item-actions button, .list-detail-actions button, .btn-header-icon {
-            margin-left: 5px;
-            background: none;
-            border: none;
-            font-size: 1.3em;
-            cursor: pointer;
-            padding: 8px;
-            color: var(--text-light);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-        .list-actions button svg, .item-actions button svg, .list-detail-actions button svg, .btn-header-icon svg {
-            width: 1em; height: 1em; fill: currentColor;
-        }
-        .list-actions button:hover, .item-actions button:hover, .list-detail-actions button:hover, .btn-header-icon:hover {
-            color: var(--pastel-pink);
-        }
-
-
-        /* --- Item Styles (Inside List Detail) --- */
-        #itemsContainer {
-            flex-grow: 1;
-        }
-        .item-row {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .item-row:last-child {
-            border-bottom: none;
-        }
-        .item-tickbox {
-            margin-right: 12px;
-            transform: scale(1.5);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .item-details {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .item-name {
-            font-weight: 500;
-            word-break: break-word;
-        }
-        .item-weight {
-            font-size: 0.85em;
-            color: var(--text-light);
-        }
-        .item-price-display {
-            font-size: 0.85em;
-            color: var(--pastel-mint);
-            font-weight: 500;
-        }
-        .item-purchased .item-name, .item-purchased .item-weight {
-            text-decoration: line-through;
-            color: #b0b0b0;
-        }
-        .item-actions {
-            flex-shrink: 0;
-            display: flex;
-        }
-
-
-        /* --- Buttons --- */
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            font-weight: 500;
-            text-align: center;
-            width: 100%;
-            margin-top: 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn svg {
-            width: 1.1em; height: 1.1em; fill: currentColor;
-        }
-        .btn:first-child {
-            margin-top: 0;
-        }
-        .btn:active {
-            transform: scale(0.98);
-        }
-        .btn-primary {
-            background-color: var(--pastel-mint);
-            color: var(--text-color);
-        }
-        .btn-primary:hover {
-            background-color: #90d9e0;
-        }
-        .btn-secondary {
-            background-color: var(--pastel-pink);
-            color: var(--text-color);
-        }
-         .btn-secondary:hover {
-            background-color: #f0a0b9;
-        }
-        .btn-danger {
-            background-color: #ff7b7b;
-            color: white;
-        }
-        .btn-danger:hover {
-            background-color: #e05252;
-        }
-
-        #showAddItemModalBtnListDetail {
-            margin-top: 15px;
-            width: auto;
-            padding: 10px 25px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-
-        .fab {
-            position: fixed;
-            right: 15px;
-            bottom: var(--fab-initial-bottom);
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            font-size: 1.8em;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            /* No transition for bottom needed if not adjusting for ad */
-        }
-        .fab svg {
-            width: 1em; height: 1em;
-        }
-
-        /* --- Pop-ups (Modals) --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-        }
-        .modal-content {
-            background-color: var(--primary-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: left;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-header {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--pastel-blue);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .modal-header svg {
-            width: 1.2em; height: 1.2em; fill: currentColor;
-        }
-        .modal-body {
-            margin-bottom: 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-        .modal-body p {
-            margin-bottom: 15px;
-            font-size: 0.95em;
-        }
-        .modal-footer {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column-reverse;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        .modal-footer .btn {
-            width: 100%;
-            margin-left: 0;
-        }
-
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            font-size: 0.9em;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 1em;
-        }
-        .form-group input[type="text"]:focus,
-        .form-group input[type="number"]:focus {
-            border-color: var(--pastel-blue);
-            box-shadow: 0 0 0 2px rgba(167, 216, 222, 0.5);
-            outline: none;
-        }
-
-
-        /* --- List Detail Screen Specifics --- */
-        #listDetailScreen .screen-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
-        }
-        .btn-header-icon {
-            background: none;
-            border: none;
-            color: var(--pastel-blue);
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 5px;
-            margin-right: 10px;
-        }
-         .btn-header-icon svg { display: block; }
-
-        #listDetailScreen .list-detail-title {
-            flex-grow: 1;
-            font-size: 1.4em;
-            color: var(--pastel-blue);
-            font-weight: 600;
-            margin: 0;
-            word-break: break-word;
-            text-align: left;
-        }
-        #listDetailScreen .list-detail-actions {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-        }
-        #listDetailScreen .list-detail-actions button {
-            margin-left: 8px;
-            font-size: 1.4em;
-        }
-
-        .total-price-section {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: var(--pastel-lavender);
-            border-radius: 8px;
-            text-align: right;
-            font-size: 1.1em;
-            font-weight: 600;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-        .total-price-section svg {
-            width: 1.2em; height: 1.2em; fill: currentColor;
-        }
-
-        /* Utility */
+        /* Container */
+        .container { max-width: 600px; margin: 0 auto; padding: 15px 20px; }
         .hidden { display: none !important; }
-        .placeholder-text {
-            text-align: center;
-            color: var(--text-light);
-            padding: 20px;
-            font-size: 0.95em;
+
+        /* --- Input Bar (Floating & Responsive) --- */
+        .input-wrapper {
+            background: var(--surface);
+            padding: 8px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex; gap: 8px; margin-bottom: 25px; align-items: center;
+            border: 1px solid var(--border);
+            position: relative;
+            z-index: 40;
+            flex-wrap: nowrap;
+        }
+        .clean-input {
+            border: none; background: transparent; padding: 12px;
+            font-size: 0.95rem; color: var(--text-main); border-radius: 12px;
+        }
+        .clean-input:focus { background: var(--bg); }
+        #inName { flex: 2; padding-left: 15px; font-weight: 500; min-width: 0; }
+        #inQty { width: 85px; text-align: center; flex-shrink: 0; } 
+
+        @media (max-width: 480px) {
+            .input-wrapper { flex-wrap: wrap; padding: 12px; border-radius: 24px; gap: 10px; }
+            #inName { flex: 1 1 100%; border-bottom: 1px solid var(--gray-active); border-radius: 12px 12px 4px 4px; margin-bottom: 2px; }
+            #inQty { flex: 1; background: var(--bg); }
+            .custom-dd-container { flex: 1; }
+            .custom-dd-trigger { background: var(--bg); }
         }
 
+        /* --- CUSTOM GRAY DROPDOWN --- */
+        .custom-dd-container { position: relative; width: 75px; height: 42px; flex-shrink: 0; }
+        .custom-dd-trigger {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+            background: var(--bg); border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; color: var(--text-main);
+            cursor: pointer; transition: background 0.2s;
+        }
+        .custom-dd-trigger:hover { background: #e2e8f0; }
+        .custom-dd-trigger svg { width: 14px; height: 14px; color: var(--text-sub); }
+        .custom-dd-menu {
+            position: absolute; top: 50px; left: 0; width: 100%;
+            background: var(--surface); border-radius: 12px;
+            box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+            padding: 5px; opacity: 0; pointer-events: none; transform: translateY(-10px);
+            transition: 0.2s; z-index: 100;
+        }
+        .custom-dd-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .custom-option {
+            padding: 8px 10px; border-radius: 8px; font-size: 0.9rem;
+            color: var(--text-main); cursor: pointer; text-align: center;
+            transition: background 0.1s;
+        }
+        .custom-option:hover { background-color: var(--gray-hover); }
+        .custom-option.selected { background-color: var(--gray-active); font-weight: 700; }
+
+        /* Add Button */
+        .btn-add {
+            background: var(--text-main); color: white; border: none;
+            width: 42px; height: 42px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; transition: 0.2s;
+        }
+        .btn-add:active { transform: scale(0.95); }
+
+        /* --- List Cards --- */
+        .list-card { 
+            background: var(--surface); border-radius: var(--radius); 
+            padding: 20px; margin-bottom: 15px; 
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+            cursor: pointer; transition: transform 0.1s;
+            position: relative;
+        }
+        .list-card:active { transform: scale(0.98); }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 700; padding-right: 30px; }
+        .card-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-sub); }
+        .card-del-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: transparent; border: none;
+            color: #94a3b8; cursor: pointer; padding: 5px;
+            border-radius: 50%; transition: 0.2s;
+            z-index: 5;
+        }
+        .card-del-btn:hover { background: #fee2e2; color: var(--danger); }
+        .card-del-btn svg { width: 18px; height: 18px; }
+
+        /* --- Items Grid --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .item-card { 
+            background: var(--surface); border-radius: 16px; padding: 15px; 
+            position: relative; display: flex; flex-direction: column; 
+            border: 1px solid transparent; box-shadow: var(--shadow-sm);
+        }
+        .item-card.bought { background: #f8fafc; opacity: 0.7; }
+        .checkbox-overlay {
+            position: absolute; top: 10px; right: 10px;
+            width: 24px; height: 24px;
+            border: 2px solid var(--border); border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            background: var(--surface); transition: 0.2s;
+        }
+        .item-card.bought .checkbox-overlay { background: var(--text-main); border-color: var(--text-main); }
+        .checkbox-overlay svg { width: 14px; color: white; opacity: 0; transition: 0.2s; }
+        .item-card.bought .checkbox-overlay svg { opacity: 1; }
+        .item-name { font-weight: 600; margin-bottom: 4px; padding-right: 30px; word-break: break-word; }
+        .item-meta { font-size: 0.85rem; color: var(--text-sub); }
+        .price-wrapper { margin-top: 15px; background: var(--bg); padding: 6px 10px; border-radius: 8px; display: flex; align-items: center; }
+        .price-input { background: transparent; border: none; width: 100%; font-weight: 700; font-size: 0.95rem; }
+        .actions { display: flex; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bg); }
+        .act-btn { flex: 1; border: none; background: transparent; padding: 6px; border-radius: 6px; cursor: pointer; color: var(--text-sub); font-size: 0.8rem; }
+        .act-btn:hover { background: #e2e8f0; color: var(--text-main); }
+        .act-btn.del:hover { background: #fee2e2; color: var(--danger); }
+
+        .fab { position: fixed; bottom: 30px; right: 25px; background: var(--text-main); color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-lg); border: none; cursor: pointer; z-index: 90; }
+
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); padding: 15px 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; z-index: 40; border-top: 1px solid var(--border); }
+        .btn-save { background: var(--text-main); color: white; border: none; padding: 12px 25px; border-radius: 30px; font-weight: 600; cursor: pointer; min-width: 100px; transition: background-color 0.3s; }
+
+        /* --- Modals --- */
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: 0.2s; }
+        .modal-bg.open { opacity: 1; pointer-events: auto; }
+        .modal-card { background: var(--surface); width: 85%; max-width: 320px; border-radius: 24px; padding: 25px; box-shadow: var(--shadow-lg); transform: translateY(20px); transition: 0.2s; text-align: center; }
+        .modal-bg.open .modal-card { transform: translateY(0); }
+        .modal-input { width: 100%; padding: 12px; background: var(--bg); border: 1px solid transparent; border-radius: 12px; margin: 10px 0 20px; font-size: 1rem; text-align: left;}
+        .modal-input:focus { background: white; border-color: var(--text-main); }
+        .modal-btns { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .m-btn { padding: 10px 24px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+        .m-btn.cancel { background: #f1f5f9; color: var(--text-main); }
+        .m-btn.confirm { background: var(--text-main); color: white; }
+        .m-btn.danger { background: var(--danger); color: white; }
+        .confirm-msg { color: var(--text-sub); margin-bottom: 5px; line-height: 1.5; }
+
+        /* --- AD WRAPPER STYLING --- */
+        .ad-footer-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            /* Extra padding at bottom to clear the FAB and Save Bar */
+            padding-bottom: 100px; 
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header" id="appHeader">
-            <span class="app-title-text">Shop Spot</span>
-            <!-- Cart SVG will be appended by JS -->
-        </header>
-        <!-- No Top Ad Banner -->
 
-        <nav class="app-nav">
-            <button class="nav-button active" id="navMyLists">
-                <!-- SVG --> My Lists
-            </button>
-            <button class="nav-button" id="navHistory">
-                <!-- SVG --> History
-            </button>
-        </nav>
-
-        <!-- Screen: My Lists -->
-        <section id="myListsScreen" class="screen active">
-            <h2 class="screen-title">My Shopping Lists</h2>
-            <div id="listsContainer">
-                <p class="placeholder-text">No lists yet. Create one!</p>
+    <!-- HOME -->
+    <div id="view-home">
+        <header><h1>ShopSpot</h1></header>
+        <div class="tab-wrapper">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('active')">My Lists</button>
+                <button class="tab" onclick="switchTab('history')">History</button>
             </div>
-        </section>
-
-        <!-- Screen: List Detail -->
-        <section id="listDetailScreen" class="screen">
-            <div class="screen-header">
-                <button id="backToListsBtn" class="btn-header-icon" title="Back to My Lists" aria-label="Back to My Lists">
-                    <!-- Back Arrow SVG -->
-                </button>
-                <h2 id="listDetailName" class="list-detail-title">List Name</h2>
-                <div class="list-detail-actions">
-                    <button id="editListNameBtn" title="Edit List Name" aria-label="Edit List Name"><!-- Edit SVG --></button>
-                    <button id="downloadListPdfBtn" title="Download PDF" aria-label="Download PDF"><!-- Download SVG --></button>
-                    <button id="deleteListBtn" title="Delete List" aria-label="Delete List"><!-- Delete SVG --></button>
-                </div>
-            </div>
-            <div id="itemsContainer">
-                <p class="placeholder-text">No items in this list yet. Add some!</p>
-            </div>
-            <button class="btn btn-primary" id="showAddItemModalBtnListDetail">
-                <!-- Add Icon SVG --> Add Item to List
-            </button>
-            <div class="total-price-section" id="totalPriceSection">
-                <!-- Shopping Bag SVG --> Total Price: $0.00
-            </div>
-        </section>
-
-        <!-- Screen: History -->
-        <section id="historyScreen" class="screen">
-            <h2 class="screen-title">Shopping History</h2>
-            <div id="historyListsContainer">
-                <p class="placeholder-text">No lists in history.</p>
-            </div>
-        </section>
-
-        <button class="btn btn-primary fab" id="fabButton" aria-label="Create New List">
-            <!-- Add Icon SVG -->
+        </div>
+        <div class="container" id="list-container"></div>
+        <button class="fab" onclick="showModal('modal-create')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
+    </div>
 
+    <!-- LIST VIEW -->
+    <div id="view-list" class="hidden">
+        <header>
+            <button class="btn-icon" onclick="goHome()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="list-title">List Name</h1>
+        </header>
 
-        <!-- Modals (structure remains the same) -->
-        <div id="listNameModal" class="modal">
-            <div class="modal-content">
-                <h3 class="modal-header" id="listNameModalTitle"><!-- Add/Edit SVG --> Add New List</h3>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="listNameInput">List Name:</label>
-                        <input type="text" id="listNameInput" placeholder="e.g., Weekly Groceries">
+        <div class="container">
+            <!-- INPUT BAR -->
+            <div id="add-area" class="input-wrapper">
+                <input type="text" id="inName" class="clean-input" placeholder="Item name...">
+                <input type="number" id="inQty" class="clean-input" placeholder="Qty">
+                
+                <div class="custom-dd-container">
+                    <div class="custom-dd-trigger" onclick="toggleUnitMenu()">
+                        <span id="selectedUnitText">pcs</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="custom-dd-menu" id="unitMenu">
+                        <div class="custom-option selected" onclick="selectUnit('pcs')">pcs</div>
+                        <div class="custom-option" onclick="selectUnit('kg')">kg</div>
+                        <div class="custom-option" onclick="selectUnit('g')">g</div>
+                        <div class="custom-option" onclick="selectUnit('L')">L</div>
+                        <div class="custom-option" onclick="selectUnit('pkt')">pkt</div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="saveListNameBtn"><!-- Save SVG --> Save List</button>
-                    <button class="btn btn-secondary" id="cancelListNameBtn"><!-- Cross SVG --> Cancel</button>
-                </div>
+
+                <button class="btn-add" onclick="addItem()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
             </div>
+
+            <div id="grid-container" class="grid"></div>
         </div>
 
-        <div id="itemModal" class="modal">
-            <div class="modal-content">
-                <h3 class="modal-header" id="itemModalTitle"><!-- Add/Edit SVG --> Add New Item</h3>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="itemNameInput">Item Name:</label>
-                        <input type="text" id="itemNameInput" placeholder="e.g., Apples">
-                    </div>
-                    <div class="form-group">
-                        <label for="itemWeightInput">Weight/Quantity:</label>
-                        <input type="text" id="itemWeightInput" placeholder="e.g., 1kg, 2 packs">
-                    </div>
-                    <div class="form-group hidden" id="itemPriceGroup">
-                        <label for="itemPriceInputModal">Price (optional):</label>
-                        <input type="number" id="itemPriceInputModal" placeholder="0.00" step="0.01">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                     <button class="btn btn-primary" id="saveItemBtn"><!-- Cart/Add SVG --> Add Item</button>
-                    <button class="btn btn-secondary" id="cancelItemBtn"><!-- Cross SVG --> Cancel</button>
-                </div>
+        <div class="footer-bar" id="footer-actions">
+            <div>Total: <span id="total-price" style="font-weight:800; font-size:1.2rem; margin-left:5px;">$0.00</span></div>
+            <button id="btn-save" class="btn-save" onclick="manualSave()">Save</button>
+        </div>
+    </div>
+
+    <!-- AD CONTAINER (Appears at the bottom of content, above fixed footer) -->
+    <div class="ad-footer-wrapper">
+        <script async="async" data-cfasync="false" src="//pl28234684.effectivegatecpm.com/5eb16f1e33644e66b62e2b5a13db708c/invoke.js"></script>
+        <div id="container-5eb16f1e33644e66b62e2b5a13db708c"></div>
+    </div>
+
+    <!-- CREATE LIST MODAL -->
+    <div id="modal-create" class="modal-bg">
+        <div class="modal-card">
+            <h3>New List</h3>
+            <input type="text" id="new-list-input" class="modal-input" placeholder="e.g. Weekly Groceries" autofocus>
+            <div class="modal-btns">
+                <button class="m-btn cancel" onclick="closeModals()">Cancel</button>
+                <button class="m-btn confirm" onclick="createList()">Create</button>
             </div>
         </div>
+    </div>
 
-        <div id="priceModal" class="modal">
-            <div class="modal-content">
-                <h3 class="modal-header" id="priceModalHeader"><!-- Price Tag SVG --> Enter Item Price</h3>
-                <div class="modal-body">
-                    <p id="priceModalItemName">Item: </p>
-                    <div class="form-group">
-                        <label for="itemPriceTickInput">Price:</label>
-                        <input type="number" id="itemPriceTickInput" placeholder="0.00" step="0.01">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="savePriceBtn"><!-- Check SVG --> Add Price</button>
-                    <button class="btn btn-secondary" id="cancelPriceBtn"><!-- Cross SVG --> Skip</button>
-                </div>
+    <!-- EDIT ITEM MODAL -->
+    <div id="modal-edit" class="modal-bg">
+        <div class="modal-card">
+            <h3>Edit Item</h3>
+            <input type="hidden" id="edit-id">
+            <input type="text" id="edit-name" class="modal-input" placeholder="Name" style="margin-bottom:10px">
+            <div style="display:flex; gap:10px; margin-bottom:10px">
+                <input type="number" id="edit-qty" class="modal-input" style="margin:0">
+                <select id="edit-unit" class="modal-input" style="margin:0; width:100px;">
+                    <option value="pcs">pcs</option>
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="L">L</option>
+                    <option value="pkt">pkt</option>
+                </select>
+            </div>
+            <div class="modal-btns">
+                <button class="m-btn cancel" onclick="closeModals()">Cancel</button>
+                <button class="m-btn confirm" onclick="saveEdit()">Save</button>
             </div>
         </div>
+    </div>
 
-        <div id="confirmModal" class="modal">
-            <div class="modal-content">
-                <h3 class="modal-header" id="confirmModalHeader"><!-- Delete/Restore SVG --> Confirm Action</h3>
-                <div class="modal-body">
-                    <p id="confirmMessage">Are you sure?</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="confirmActionBtn"><!-- Check SVG --> Yes</button>
-                    <button class="btn btn-secondary" id="cancelActionBtn"><!-- Cross SVG --> No</button>
-                </div>
+    <!-- CUSTOM CONFIRM POPUP -->
+    <div id="modal-confirm" class="modal-bg">
+        <div class="modal-card">
+            <h3 id="confirm-title" style="margin-top:0">Confirm</h3>
+            <p id="confirm-msg" class="confirm-msg">Are you sure?</p>
+            <div class="modal-btns">
+                <button class="m-btn cancel" onclick="closeConfirm()">No</button>
+                <button id="confirm-yes-btn" class="m-btn confirm">Yes</button>
             </div>
         </div>
-
-        <!-- No Bottom Ad Banner Div -->
-    </div> <!-- .app-container -->
-
-    <!-- No Popunder Ad Script -->
+    </div>
 
     <script>
+        let appData = JSON.parse(localStorage.getItem('shopSpotProV5')) || { lists: [] };
+        let currentTab = 'active';
+        let activeListId = null;
+        let currentUnit = 'pcs';
+        let confirmCallback = null;
+
         document.addEventListener('DOMContentLoaded', () => {
-            const svgIcons = { // SVG definitions remain the same
-                add: '<svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>',
-                edit: '<svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>',
-                delete: '<svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>',
-                download: '<svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg>',
-                cart: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-1.45-5c.59 0 1.09-.22 1.45-.59L21.71 5.41c.27-.27.36-.66.25-1.02-.11-.37-.44-.64-.84-.64H4.41l-.94-2H1v2h2l3.6 7.59L5.25 14.03c-.24.45-.03.97.42 1.21.13.07.27.1.4.1h10c.66 0 1.2-.54 1.2-1.2 0-.33-.13-.63-.34-.86L15.55 13z"></path></svg>',
-                backArrow: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>',
-                list: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"></path></svg>',
-                history: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2.5c0-.28-.22-.5-.5-.5H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-.28-.22-.5-.5-.5H14v-5zM18 20H6V4h7v5h5v11zM8 17h8v-2H8v2zm0-4h8v-2H8v2z"></path></svg>',
-                restore: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12z"></path></svg>',
-                check: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></svg>',
-                cross: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path></svg>',
-                save: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"></path></svg>',
-                priceTag: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.22-1.05-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"></path></svg>',
-                shoppingBag: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 14H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v10z"></path></svg>'
-            };
-
-            // --- State Variables ---
-            let lists = [];
-            let historyLists = [];
-            let currentListId = null;
-            let editingListId = null;
-            let editingItemId = null;
-            let itemToPriceId = null;
-            let actionCallback = null;
-            // let adIsVisible = false; // REMOVED - No ad visibility tracking needed
-
-            // --- DOM Elements ---
-            const appHeaderEl = document.getElementById('appHeader'); // This will be null, but kept for structure if re-added
-            const screens = {
-                myLists: document.getElementById('myListsScreen'),
-                listDetail: document.getElementById('listDetailScreen'),
-                history: document.getElementById('historyScreen'),
-            };
-            const navButtons = {
-                myLists: document.getElementById('navMyLists'),
-                history: document.getElementById('navHistory'),
-            };
-
-            const listsContainer = document.getElementById('listsContainer');
-            const fabButton = document.getElementById('fabButton');
-            // const bottomAdBanner = document.getElementById('bottomAdBanner'); // REMOVED
-
-            const backToListsBtn = document.getElementById('backToListsBtn');
-            const listDetailNameEl = document.getElementById('listDetailName');
-            const itemsContainer = document.getElementById('itemsContainer');
-            const showAddItemModalBtnListDetail = document.getElementById('showAddItemModalBtnListDetail');
-            const totalPriceSection = document.getElementById('totalPriceSection');
-            const editListNameBtn = document.getElementById('editListNameBtn');
-            const downloadListPdfBtn = document.getElementById('downloadListPdfBtn');
-            const deleteListBtn = document.getElementById('deleteListBtn');
-
-            const historyListsContainer = document.getElementById('historyListsContainer');
-
-            // Modals and their inner elements
-            const listNameModal = document.getElementById('listNameModal');
-            const listNameModalTitle = document.getElementById('listNameModalTitle');
-            const listNameInput = document.getElementById('listNameInput');
-            const saveListNameBtn = document.getElementById('saveListNameBtn');
-            const cancelListNameBtn = document.getElementById('cancelListNameBtn');
-
-            const itemModal = document.getElementById('itemModal');
-            const itemModalTitle = document.getElementById('itemModalTitle');
-            const itemNameInput = document.getElementById('itemNameInput');
-            const itemWeightInput = document.getElementById('itemWeightInput');
-            const itemPriceGroup = document.getElementById('itemPriceGroup');
-            const itemPriceInputModal = document.getElementById('itemPriceInputModal');
-            const saveItemBtn = document.getElementById('saveItemBtn');
-            const cancelItemBtn = document.getElementById('cancelItemBtn');
-
-            const priceModal = document.getElementById('priceModal');
-            const priceModalItemName = document.getElementById('priceModalItemName');
-            const priceModalHeader = priceModal.querySelector('.modal-header');
-            const itemPriceTickInput = document.getElementById('itemPriceTickInput');
-            const savePriceBtn = document.getElementById('savePriceBtn');
-            const cancelPriceBtn = document.getElementById('cancelPriceBtn');
-
-            const confirmModal = document.getElementById('confirmModal');
-            const confirmModalHeaderEl = document.getElementById('confirmModalHeader');
-            const confirmMessage = document.getElementById('confirmMessage');
-            const confirmActionBtn = document.getElementById('confirmActionBtn');
-            const cancelActionBtn = document.getElementById('cancelActionBtn');
-
-            const { jsPDF } = window.jspdf;
-
-            // Icon injection functions
-            function setButtonIcon(buttonElement, iconName, textBefore = '', textAfter = '') {
-                if (buttonElement && svgIcons[iconName]) {
-                    buttonElement.innerHTML = `${textBefore ? textBefore + ' ' : ''}${svgIcons[iconName]}${textAfter ? ' ' + textAfter : ''}`;
-                } else if (buttonElement && textBefore === '' && textAfter === '') {
-                     buttonElement.innerHTML = svgIcons[iconName] || '';
-                }
-            }
-            function setElementIcon(element, iconName, position = 'prepend', textContent = null) {
-                if (element && svgIcons[iconName]) {
-                    const currentText = textContent !== null ? textContent : element.textContent.trim();
-                    if (position === 'prepend') {
-                        element.innerHTML = svgIcons[iconName] + (currentText ? ' ' + currentText : '');
-                    } else {
-                        element.innerHTML = (currentText ? currentText + ' ' : '') + svgIcons[iconName];
-                    }
-                }
-            }
-
-            // Initialize Icons
-            function initializeStaticIcons() {
-                const appTitleTextEl = appHeaderEl.querySelector('.app-title-text'); // appHeaderEl is null, so this won't run
-                if (appTitleTextEl) { appTitleTextEl.insertAdjacentHTML('afterend', svgIcons.cart); }
-
-                setButtonIcon(navButtons.myLists, 'list', '', 'My Lists');
-                setButtonIcon(navButtons.history, 'history', '', 'History');
-                setButtonIcon(fabButton, 'add');
-                setButtonIcon(backToListsBtn, 'backArrow');
-                setButtonIcon(editListNameBtn, 'edit');
-                setButtonIcon(downloadListPdfBtn, 'download');
-                setButtonIcon(deleteListBtn, 'delete');
-                setButtonIcon(showAddItemModalBtnListDetail, 'add', '', 'Add Item to List');
-                totalPriceSection.innerHTML = `${svgIcons.shoppingBag} Total Price: $0.00`;
-                setButtonIcon(saveListNameBtn, 'save', '', 'Save List');
-                setButtonIcon(cancelListNameBtn, 'cross', '', 'Cancel');
-                setButtonIcon(saveItemBtn, 'add', '', 'Add Item');
-                setButtonIcon(cancelItemBtn, 'cross', '', 'Cancel');
-                setElementIcon(priceModalHeader, 'priceTag', 'prepend', 'Enter Item Price');
-                setButtonIcon(savePriceBtn, 'check', '', 'Add Price');
-                setButtonIcon(cancelPriceBtn, 'cross', '', 'Skip');
-                setButtonIcon(confirmActionBtn, 'check', '', 'Yes');
-                setButtonIcon(cancelActionBtn, 'cross', '', 'No');
-            }
-
-            // Utility Functions
-            const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
-            const displayModal = (modalEl) => { modalEl.style.display = 'flex'; };
-            const hideModal = (modalEl) => { modalEl.style.display = 'none'; };
-
-            // Local Storage
-            const loadData = () => {
-                const storedLists = localStorage.getItem('shopSpotListsV3');
-                const storedHistory = localStorage.getItem('shopSpotHistoryV3');
-                lists = storedLists ? JSON.parse(storedLists) : [];
-                historyLists = storedHistory ? JSON.parse(storedHistory) : [];
-            };
-            const saveData = () => {
-                localStorage.setItem('shopSpotListsV3', JSON.stringify(lists));
-                localStorage.setItem('shopSpotHistoryV3', JSON.stringify(historyLists));
-            };
-
-            // Screen Navigation
-            const navigateTo = (screenName) => {
-                Object.values(screens).forEach(screen => screen.classList.remove('active'));
-                Object.values(navButtons).forEach(button => button.classList.remove('active'));
-                screens[screenName].classList.add('active');
-                if (navButtons[screenName]) navButtons[screenName].classList.add('active');
-                currentListId = (screenName === 'listDetail') ? currentListId : null;
-                fabButton.style.display = (screenName === 'myLists') ? 'flex' : 'none';
-            };
-
-            // Rendering Functions (MyLists, ListDetail, History) - remain the same as previous full version
-            const renderMyLists = () => {
-                listsContainer.innerHTML = '';
-                if (lists.length === 0) {
-                    listsContainer.innerHTML = '<p class="placeholder-text">No lists yet. Create one!</p>';
-                    return;
-                }
-                lists.sort((a, b) => (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt));
-                lists.forEach(list => {
-                    const purchasedItems = list.items.filter(item => item.purchased).length;
-                    const card = document.createElement('div');
-                    card.className = 'list-card';
-                    card.dataset.listId = list.id;
-
-                    const clickableArea = document.createElement('div');
-                    clickableArea.className = 'list-card-clickable-area';
-                    clickableArea.innerHTML = `
-                        <div class="list-card-header">
-                            <span class="list-card-name">${list.name}</span>
-                        </div>
-                        <div class="list-card-meta">
-                            ${list.items.length} items / ${purchasedItems} purchased
-                        </div>
-                    `;
-                    clickableArea.addEventListener('click', () => openListDetail(list.id));
-
-                    const listActionsDiv = document.createElement('div');
-                    listActionsDiv.className = 'list-actions';
-                    const editBtn = document.createElement('button');
-                    editBtn.title = "Edit Name";
-                    setButtonIcon(editBtn, 'edit');
-                    editBtn.addEventListener('click', (e) => { e.stopPropagation(); showEditListNameModal(list.id); });
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.title = "Delete List";
-                    setButtonIcon(deleteBtn, 'delete');
-                    deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); confirmDeleteList(list.id, list.name); });
-                    listActionsDiv.appendChild(editBtn);
-                    listActionsDiv.appendChild(deleteBtn);
-
-                    clickableArea.querySelector('.list-card-header').appendChild(listActionsDiv);
-                    card.appendChild(clickableArea);
-                    listsContainer.appendChild(card);
-                });
-            };
-            const renderListDetail = () => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                if (!list) {
-                    navigateTo('myLists');
-                    return;
-                }
-
-                listDetailNameEl.textContent = list.name;
-                itemsContainer.innerHTML = '';
-                if (list.items.length === 0) {
-                    itemsContainer.innerHTML = '<p class="placeholder-text">No items in this list yet. Add some!</p>';
-                } else {
-                    list.items.forEach(item => {
-                        const itemRow = document.createElement('div');
-                        itemRow.className = `item-row ${item.purchased ? 'item-purchased' : ''}`;
-                        itemRow.dataset.itemId = item.id;
-                        itemRow.innerHTML = `
-                            <input type="checkbox" class="item-tickbox" ${item.purchased ? 'checked' : ''} aria-label="Mark ${item.name} as purchased">
-                            <div class="item-details">
-                                <span class="item-name">${item.name}</span>
-                                <span class="item-weight">${item.weight}</span>
-                                ${item.price !== null ? `<span class="item-price-display">$${parseFloat(item.price).toFixed(2)}</span>` : ''}
-                            </div>
-                            <div class="item-actions">
-                                <button class="edit-item-btn" title="Edit Item" aria-label="Edit ${item.name}">${svgIcons.edit}</button>
-                                <button class="delete-item-btn" title="Delete Item" aria-label="Delete ${item.name}">${svgIcons.delete}</button>
-                            </div>
-                        `;
-                        itemRow.querySelector('.item-tickbox').addEventListener('change', (e) => {
-                            toggleItemPurchased(item.id, e.target.checked);
-                        });
-                        itemRow.querySelector('.edit-item-btn').addEventListener('click', () => showEditItemModal(item.id));
-                        itemRow.querySelector('.delete-item-btn').addEventListener('click', () => confirmDeleteItem(item.id, item.name));
-                        itemsContainer.appendChild(itemRow);
-                    });
-                }
-                updateTotalPrice();
-            };
-            const renderHistoryLists = () => {
-                historyListsContainer.innerHTML = '';
-                if (historyLists.length === 0) {
-                    historyListsContainer.innerHTML = '<p class="placeholder-text">No lists in history.</p>';
-                    return;
-                }
-                historyLists.sort((a,b) => b.archivedAt - a.archivedAt);
-                historyLists.forEach(list => {
-                    const card = document.createElement('div');
-                    card.className = 'history-list-card';
-                    card.innerHTML = `
-                        <div class="list-card-header">
-                            <span class="list-card-name">${list.name}</span>
-                            <div class="list-actions">
-                                <button class="restore-list-btn" title="Restore List" aria-label="Restore ${list.name}">${svgIcons.restore}</button>
-                                <button class="perm-delete-list-btn" title="Delete Permanently" aria-label="Delete ${list.name} permanently">${svgIcons.delete}</button>
-                            </div>
-                        </div>
-                        <div class="list-card-meta">
-                            Archived: ${new Date(list.archivedAt).toLocaleDateString()} - ${list.items.length} items
-                        </div>
-                         <div class="history-items-preview hidden" style="font-size:0.8em; margin-top: 5px; padding-left:10px; color: var(--text-light);">
-                            ${list.items.map(i => `<div>- ${i.name} (${i.weight}) ${i.price ? '$'+parseFloat(i.price).toFixed(2) : ''}</div>`).join('') || 'No items recorded.'}
-                        </div>
-                    `;
-                    card.querySelector('.list-card-name').addEventListener('click', () => {
-                        card.querySelector('.history-items-preview').classList.toggle('hidden');
-                    });
-                     card.querySelector('.restore-list-btn').addEventListener('click', () => {
-                        confirmAction(
-                            'Restore List?',
-                            `Restore "${list.name}" to your active lists?`,
-                            'Yes, Restore',
-                            () => restoreList(list.id),
-                            'restore'
-                        );
-                    });
-                    card.querySelector('.perm-delete-list-btn').addEventListener('click', () => confirmPermanentDelete(list.id, list.name));
-                    historyListsContainer.appendChild(card);
-                });
-            };
-
-
-            // Update Total Price
-            const updateTotalPrice = () => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                if (!list) return;
-                const total = list.items.reduce((sum, item) => {
-                    return sum + (item.price && item.purchased ? parseFloat(item.price) : 0);
-                }, 0);
-                totalPriceSection.innerHTML = `${svgIcons.shoppingBag} Total Price: $${total.toFixed(2)}`;
-            };
-
-            // Modal Openers - remain the same
-            const showAddListModal = () => {
-                editingListId = null;
-                setElementIcon(listNameModalTitle, 'add', 'prepend', 'Add New List');
-                listNameInput.value = '';
-                setButtonIcon(saveListNameBtn, 'save', '', 'Save List');
-                displayModal(listNameModal);
-                listNameInput.focus();
-            };
-            const showEditListNameModal = (listId) => {
-                const list = lists.find(l => l.id === listId);
-                if (!list) return;
-                editingListId = listId;
-                setElementIcon(listNameModalTitle, 'edit', 'prepend', 'Edit List Name');
-                listNameInput.value = list.name;
-                setButtonIcon(saveListNameBtn, 'save', '', 'Save Changes');
-                displayModal(listNameModal);
-                listNameInput.focus();
-            };
-            editListNameBtn.addEventListener('click', () => {
-                if (currentListId) showEditListNameModal(currentListId);
-            });
-            const showAddItemModal = () => {
-                editingItemId = null;
-                setElementIcon(itemModalTitle, 'add', 'prepend', 'Add New Item');
-                itemNameInput.value = '';
-                itemWeightInput.value = '';
-                itemPriceInputModal.value = '';
-                itemPriceGroup.classList.add('hidden');
-                setButtonIcon(saveItemBtn, 'add', '', 'Add Item');
-                displayModal(itemModal);
-                itemNameInput.focus();
-            };
-            const showEditItemModal = (itemId) => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                const item = list.items.find(i => i.id === itemId);
-                if (!item) return;
-                editingItemId = itemId;
-                setElementIcon(itemModalTitle, 'edit', 'prepend', 'Edit Item');
-                itemNameInput.value = item.name;
-                itemWeightInput.value = item.weight;
-                itemPriceInputModal.value = item.price !== null ? parseFloat(item.price).toFixed(2) : '';
-                itemPriceGroup.classList.remove('hidden');
-                setButtonIcon(saveItemBtn, 'save', '', 'Save Changes');
-                displayModal(itemModal);
-                itemNameInput.focus();
-            };
-            const showPriceModal = (itemId) => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                const item = list.items.find(i => i.id === itemId);
-                if (!item) return;
-                itemToPriceId = itemId;
-                setElementIcon(priceModalHeader, 'priceTag', 'prepend', 'Enter Item Price');
-                priceModalItemName.textContent = `Item: ${item.name} (${item.weight})`;
-                itemPriceTickInput.value = item.price !== null ? parseFloat(item.price).toFixed(2) : '';
-                displayModal(priceModal);
-                itemPriceTickInput.focus();
-            };
-            const confirmAction = (headerText, message, confirmBtnText, callback, icon = 'delete', confirmBtnIcon = 'check') => {
-                setElementIcon(confirmModalHeaderEl, icon, 'prepend', headerText);
-                confirmMessage.textContent = message;
-                setButtonIcon(confirmActionBtn, confirmBtnIcon, '', confirmBtnText);
-                actionCallback = callback;
-                displayModal(confirmModal);
-            };
-
-
-            // List Operations - remain the same
-            const saveList = () => {
-                const name = listNameInput.value.trim();
-                if (!name) { alert('List name cannot be empty!'); return; }
-                const now = Date.now();
-                if (editingListId) { 
-                    const list = lists.find(l => l.id === editingListId);
-                    if (list) { list.name = name; list.updatedAt = now; }
-                } else { 
-                    const newList = { id: generateId(), name: name, items: [], createdAt: now, updatedAt: now };
-                    lists.push(newList);
-                }
-                saveData(); renderMyLists();
-                if (currentListId === editingListId && editingListId) renderListDetail();
-                hideModal(listNameModal); editingListId = null;
-            };
-            const openListDetail = (listId) => {
-                currentListId = listId; renderListDetail(); navigateTo('listDetail');
-            };
-            const confirmDeleteList = (listId, listName) => {
-                confirmAction(
-                    'Delete List?', `Move "${listName}" to History?`, 'Yes, Delete',
-                    () => {
-                        const listIndex = lists.findIndex(l => l.id === listId);
-                        if (listIndex > -1) {
-                            const [listToArchive] = lists.splice(listIndex, 1);
-                            listToArchive.archivedAt = Date.now(); historyLists.unshift(listToArchive); 
-                            saveData(); renderMyLists();
-                            if (currentListId === listId) navigateTo('myLists');
-                        }
-                    }, 'delete'
-                );
-            };
-            deleteListBtn.addEventListener('click', () => {
-                 if (currentListId) {
-                    const list = lists.find(l => l.id === currentListId);
-                    if (list) confirmDeleteList(list.id, list.name);
+            renderHome();
+            document.addEventListener('click', (e) => {
+                const dd = document.querySelector('.custom-dd-container');
+                if (dd && !dd.contains(e.target)) {
+                    document.getElementById('unitMenu').classList.remove('open');
                 }
             });
-
-            // Item Operations - remain the same
-            const saveItem = () => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                if (!list) return;
-                const name = itemNameInput.value.trim();
-                const weight = itemWeightInput.value.trim();
-                let price = itemPriceInputModal.value.trim();
-                if (!name || !weight) { alert('Item name and weight/quantity are required!'); return; }
-
-                if (editingItemId) { 
-                    const item = list.items.find(i => i.id === editingItemId);
-                    if (item) {
-                        item.name = name; item.weight = weight;
-                        item.price = price !== '' ? parseFloat(price) : item.price;
-                    }
-                } else { 
-                    const newItem = { id: generateId(), name, weight, price: null, purchased: false };
-                    list.items.push(newItem);
-                }
-                list.updatedAt = Date.now(); saveData(); renderListDetail(); renderMyLists();
-                hideModal(itemModal); editingItemId = null;
-            };
-            const toggleItemPurchased = (itemId, isChecked) => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                const item = list.items.find(i => i.id === itemId);
-                if (!item) return;
-                item.purchased = isChecked;
-                if (isChecked && item.price === null) { showPriceModal(itemId); }
-                list.updatedAt = Date.now(); saveData(); renderListDetail(); renderMyLists(); 
-            };
-            const saveItemPriceFromTick = () => {
-                if (!currentListId || !itemToPriceId) return;
-                const list = lists.find(l => l.id === currentListId);
-                const item = list.items.find(i => i.id === itemToPriceId);
-                if (!item) return;
-                const price = itemPriceTickInput.value.trim();
-                item.price = price !== '' ? parseFloat(price) : null;
-                list.updatedAt = Date.now(); saveData(); renderListDetail(); renderMyLists();
-                hideModal(priceModal); itemToPriceId = null;
-            };
-            const confirmDeleteItem = (itemId, itemName) => {
-                if (!currentListId) return;
-                confirmAction( 'Delete Item?', `Remove "${itemName}" from this list?`, 'Yes, Delete',
-                    () => {
-                        const list = lists.find(l => l.id === currentListId);
-                        if (list) {
-                            list.items = list.items.filter(i => i.id !== itemId);
-                            list.updatedAt = Date.now(); saveData(); renderListDetail(); renderMyLists(); 
-                        }
-                    }, 'delete'
-                );
-            };
-
-            // History Operations - remain the same
-            const restoreList = (listId) => {
-                const listIndex = historyLists.findIndex(l => l.id === listId);
-                if (listIndex > -1) {
-                    const [listToRestore] = historyLists.splice(listIndex, 1);
-                    delete listToRestore.archivedAt; listToRestore.updatedAt = Date.now();
-                    lists.push(listToRestore); saveData(); renderHistoryLists(); renderMyLists();
-                }
-            };
-            const confirmPermanentDelete = (listId, listName) => {
-                confirmAction(
-                    'PERMANENTLY DELETE?', `"${listName}" will be gone forever. This cannot be undone.`,
-                    'Yes, Delete Forever',
-                    () => {
-                        historyLists = historyLists.filter(l => l.id !== listId);
-                        saveData(); renderHistoryLists();
-                    }, 'delete' 
-                );
-                confirmActionBtn.classList.remove('btn-primary', 'btn-secondary');
-                confirmActionBtn.classList.add('btn-danger');
-                setButtonIcon(confirmActionBtn, 'delete', '', 'Yes, Delete Forever');
-            };
-
-
-            // PDF Download - remains the same
-            const downloadPDF = () => {
-                if (!currentListId) return;
-                const list = lists.find(l => l.id === currentListId);
-                if (!list) return;
-
-                const doc = new jsPDF();
-                doc.setFontSize(18);
-                doc.text(list.name, 14, 20);
-                doc.setFontSize(10);
-                let yPos = 30;
-                const pageHeight = doc.internal.pageSize.height;
-                const margin = 15;
-                let itemNumber = 1;
-
-                list.items.forEach(item => {
-                    if (yPos > pageHeight - margin - 10) {
-                        doc.addPage();
-                        yPos = margin;
-                    }
-                    const purchasedMark = item.purchased ? '[X]' : '[ ]';
-                    let priceText = '';
-                    if (item.price !== null) {
-                        priceText = item.purchased ? ` - $${parseFloat(item.price).toFixed(2)}` : ` (Est: $${parseFloat(item.price).toFixed(2)})`;
-                    }
-                    
-                    let itemLine = `${itemNumber}. ${purchasedMark} ${item.name} (${item.weight})${priceText}`;
-                    const lines = doc.splitTextToSize(itemLine, doc.internal.pageSize.width - (margin * 2));
-                    doc.text(lines, margin, yPos);
-                    yPos += (lines.length * 5);
-                    itemNumber++;
-                });
-
-                yPos += 10;
-                 if (yPos > pageHeight - margin - 10) { doc.addPage(); yPos = margin; }
-                const total = list.items.reduce((sum, item) => sum + (item.price && item.purchased ? parseFloat(item.price) : 0), 0);
-                doc.setFontSize(12);
-                doc.text(`Total Purchased Price: $${total.toFixed(2)}`, margin, yPos);
-
-                doc.save(`${list.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_list.pdf`);
-            };
-
-
-            // Ad and FAB Scroll Logic - REMOVED as no ad to trigger visibility
-            // const SCROLL_THRESHOLD = 50;
-            // const AD_HEIGHT_PX = 90;
-            // const FAB_INITIAL_BOTTOM_PX = 20;
-            // function handleScroll() { /* ... REMOVED ... */ }
-            // window.removeEventListener('scroll', handleScroll, { passive: true }); // If it was added
-
-
-            // Event Listeners
-            navButtons.myLists.addEventListener('click', () => navigateTo('myLists'));
-            navButtons.history.addEventListener('click', () => { renderHistoryLists(); navigateTo('history'); });
-            backToListsBtn.addEventListener('click', () => navigateTo('myLists'));
-
-            fabButton.addEventListener('click', showAddListModal);
-            saveListNameBtn.addEventListener('click', saveList);
-            cancelListNameBtn.addEventListener('click', () => hideModal(listNameModal));
-
-            showAddItemModalBtnListDetail.addEventListener('click', showAddItemModal);
-            saveItemBtn.addEventListener('click', saveItem);
-            cancelItemBtn.addEventListener('click', () => hideModal(itemModal));
-
-            savePriceBtn.addEventListener('click', saveItemPriceFromTick);
-            cancelPriceBtn.addEventListener('click', () => { hideModal(priceModal); itemToPriceId = null; });
-
-            confirmActionBtn.addEventListener('click', () => {
-                if (actionCallback) actionCallback();
-                hideModal(confirmModal); actionCallback = null;
-                confirmActionBtn.classList.remove('btn-danger');
-                confirmActionBtn.classList.add('btn-primary');
-                setButtonIcon(confirmActionBtn, 'check', '', 'Yes');
-            });
-            cancelActionBtn.addEventListener('click', () => {
-                hideModal(confirmModal); actionCallback = null;
-                confirmActionBtn.classList.remove('btn-danger');
-                confirmActionBtn.classList.add('btn-primary');
-                setButtonIcon(confirmActionBtn, 'check', '', 'Yes');
-            });
-
-            downloadListPdfBtn.addEventListener('click', downloadPDF);
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    [listNameModal, itemModal, priceModal, confirmModal].forEach(hideModal);
-                }
-            });
-            [listNameModal, itemModal, priceModal, confirmModal].forEach(modal => {
-                modal.addEventListener('click', (e) => { if (e.target === modal) { hideModal(modal); } });
-            });
-
-            // Initial Load
-            initializeStaticIcons();
-            loadData();
-            renderMyLists();
-            navigateTo('myLists'); 
         });
+
+        function save() { localStorage.setItem('shopSpotProV5', JSON.stringify(appData)); }
+
+        // --- Custom Confirm Logic ---
+        function showCustomConfirm(title, msg, isDanger, callback) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            const btn = document.getElementById('confirm-yes-btn');
+            if(isDanger) {
+                btn.className = 'm-btn danger';
+                btn.innerText = 'Delete';
+            } else {
+                btn.className = 'm-btn confirm';
+                btn.innerText = 'Yes';
+            }
+            confirmCallback = callback;
+            document.getElementById('modal-confirm').classList.add('open');
+        }
+        function closeConfirm() {
+            document.getElementById('modal-confirm').classList.remove('open');
+            confirmCallback = null;
+        }
+        document.getElementById('confirm-yes-btn').addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            closeConfirm();
+        });
+
+        // --- Dropdown Logic ---
+        function toggleUnitMenu() {
+            document.getElementById('unitMenu').classList.toggle('open');
+        }
+        function selectUnit(val) {
+            currentUnit = val;
+            document.getElementById('selectedUnitText').innerText = val;
+            document.querySelectorAll('.custom-option').forEach(el => {
+                el.classList.remove('selected');
+                if(el.innerText === val) el.classList.add('selected');
+            });
+            document.getElementById('unitMenu').classList.remove('open');
+        }
+
+        // --- Nav ---
+        function switchTab(t) {
+            currentTab = t;
+            document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+            if(t === 'active') document.querySelector('.tab:first-child').classList.add('active');
+            else document.querySelector('.tab:last-child').classList.add('active');
+            document.querySelector('.fab').style.display = t === 'active' ? 'flex' : 'none';
+            renderHome();
+        }
+        function goHome() {
+            document.getElementById('view-list').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+            activeListId = null;
+            renderHome();
+        }
+
+        // --- Render Home ---
+        function renderHome() {
+            const container = document.getElementById('list-container');
+            container.innerHTML = '';
+            
+            const lists = appData.lists.filter(l => l.status === currentTab).sort((a,b) => b.id - a.id);
+
+            if(lists.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding-top:60px; color:var(--text-sub);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
+                    <p>${currentTab === 'active' ? 'No lists yet.' : 'No history.'}</p>
+                </div>`;
+                return;
+            }
+
+            lists.forEach(list => {
+                const total = list.items.reduce((s, i) => s + (i.bought ? (parseFloat(i.price)||0) : 0), 0);
+                const count = list.items.filter(i => i.bought).length;
+                
+                const div = document.createElement('div');
+                div.className = 'list-card';
+                div.onclick = () => openList(list.id);
+                div.innerHTML = `
+                    <button class="card-del-btn" onclick="deleteList(event, ${list.id})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                    <div class="card-header">
+                        <span>${list.name}</span>
+                        <span style="font-weight:400; color:var(--text-sub); font-size:0.8rem">${new Date(list.id).toLocaleDateString()}</span>
+                    </div>
+                    <div class="card-meta">
+                        <span>${count}/${list.items.length} bought</span>
+                        <span style="font-weight:700; color:var(--text-main); font-size:1rem">$${total.toFixed(2)}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- List Actions ---
+        function deleteList(e, id) {
+            e.stopPropagation();
+            const listIndex = appData.lists.findIndex(l => l.id === id);
+            if(listIndex === -1) return;
+            
+            if (currentTab === 'active') {
+                showCustomConfirm("Archive List", "Move this list to History?", false, () => {
+                    appData.lists[listIndex].status = 'history';
+                    save();
+                    renderHome();
+                });
+            } else {
+                showCustomConfirm("Delete List", "Permanently delete this record?", true, () => {
+                    appData.lists.splice(listIndex, 1);
+                    save();
+                    renderHome();
+                });
+            }
+        }
+
+        function openList(id) {
+            activeListId = id;
+            const list = appData.lists.find(l => l.id === id);
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-list').classList.remove('hidden');
+            document.getElementById('list-title').innerText = list.name;
+            
+            const isHistory = list.status === 'history';
+            document.getElementById('add-area').style.display = isHistory ? 'none' : 'flex';
+            document.getElementById('footer-actions').style.display = isHistory ? 'none' : 'flex';
+            renderItems();
+        }
+
+        function addItem() {
+            const name = document.getElementById('inName').value;
+            if(!name) return;
+            const list = appData.lists.find(l => l.id === activeListId);
+            list.items.push({
+                id: Date.now(), name,
+                qty: document.getElementById('inQty').value || 1,
+                unit: currentUnit,
+                price: 0, bought: false
+            });
+            save(); renderItems();
+            document.getElementById('inName').value = '';
+            document.getElementById('inQty').value = '';
+            document.getElementById('inName').focus();
+        }
+
+        function renderItems() {
+            const list = appData.lists.find(l => l.id === activeListId);
+            const container = document.getElementById('grid-container');
+            const isHistory = list.status === 'history';
+            container.innerHTML = '';
+            let total = 0;
+
+            list.items.forEach(item => {
+                if(item.bought) total += parseFloat(item.price || 0);
+                const el = document.createElement('div');
+                el.className = `item-card ${item.bought ? 'bought' : ''}`;
+                el.innerHTML = `
+                    <div class="checkbox-overlay" onclick="${!isHistory ? `toggleBought(${item.id})` : ''}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-meta">${item.qty} ${item.unit}</div>
+                    <div class="price-wrapper">
+                        <span style="color:var(--text-sub); margin-right:4px; font-size:0.8rem">$</span>
+                        <input type="number" step="0.01" class="price-input" 
+                            placeholder="0.00" value="${item.price || ''}" 
+                            onchange="updatePrice(${item.id}, this.value)"
+                            ${!item.bought || isHistory ? 'disabled' : ''}>
+                    </div>
+                    ${!isHistory ? `
+                    <div class="actions">
+                        <button class="act-btn" onclick="openEdit(${item.id})">Edit</button>
+                        <button class="act-btn del" onclick="delItem(${item.id})">Del</button>
+                    </div>` : ''}
+                `;
+                container.appendChild(el);
+            });
+            document.getElementById('total-price').innerText = '$' + total.toFixed(2);
+        }
+
+        function toggleBought(id) {
+            const list = appData.lists.find(l => l.id === activeListId);
+            const item = list.items.find(i => i.id === id);
+            item.bought = !item.bought;
+            save(); renderItems();
+        }
+        function updatePrice(id, val) {
+            const list = appData.lists.find(l => l.id === activeListId);
+            const item = list.items.find(i => i.id === id);
+            item.price = parseFloat(val) || 0;
+            save(); 
+            const t = list.items.reduce((s, i) => s + (i.bought ? (parseFloat(i.price)||0) : 0), 0);
+            document.getElementById('total-price').innerText = '$' + t.toFixed(2);
+        }
+        function delItem(id) {
+            showCustomConfirm("Delete Item", "Remove this item?", true, () => {
+                const list = appData.lists.find(l => l.id === activeListId);
+                list.items = list.items.filter(i => i.id !== id);
+                save(); renderItems();
+            });
+        }
+
+        function createList() {
+            const name = document.getElementById('new-list-input').value.trim();
+            if(!name) return;
+            const newList = { id: Date.now(), name, status: 'active', items: [] };
+            appData.lists.push(newList);
+            save(); closeModals(); openList(newList.id);
+        }
+
+        // --- NEW MANUAL SAVE FUNCTION ---
+        function manualSave() {
+            save(); 
+            const btn = document.getElementById('btn-save');
+            const originalText = btn.innerText;
+            btn.innerText = "Saved! ✓";
+            btn.style.backgroundColor = "var(--success)";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.backgroundColor = "var(--text-main)";
+            }, 1200);
+        }
+
+        function openEdit(id) {
+            const list = appData.lists.find(l => l.id === activeListId);
+            const item = list.items.find(i => i.id === id);
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = item.name;
+            document.getElementById('edit-qty').value = item.qty;
+            document.getElementById('edit-unit').value = item.unit;
+            showModal('modal-edit');
+        }
+        function saveEdit() {
+            const id = parseInt(document.getElementById('edit-id').value);
+            const list = appData.lists.find(l => l.id === activeListId);
+            const item = list.items.find(i => i.id === id);
+            item.name = document.getElementById('edit-name').value;
+            item.qty = document.getElementById('edit-qty').value;
+            item.unit = document.getElementById('edit-unit').value;
+            save(); renderItems(); closeModals();
+        }
+
+        function showModal(id) {
+            document.getElementById(id).classList.add('open');
+            if(id === 'modal-create') setTimeout(() => document.getElementById('new-list-input').focus(), 100);
+        }
+        function closeModals() {
+            document.querySelectorAll('.modal-bg').forEach(e => e.classList.remove('open'));
+        }
     </script>
 </body>
 </html>
